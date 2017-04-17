@@ -1,6 +1,3 @@
-import functions
-from forcefield import Forcefield
-
 ################################
 ## 6 # FORCE FIELD PARAMETERS ##  -> @FF <-
 ################################
@@ -12,17 +9,20 @@ from forcefield import Forcefield
 #   Phe sidechain
 #   Trp sidechain
 #   Helix BB-bonds to constraint      
+#   Lipidated amino acids - cysteine geranylgeranyl, cysteine farnesyl, cysteine palmitoyl and glycine myrisotyl
 
-class martini22(Forcefield):
+class martini22:
     ff = True
     def __init__(self):
+        import SS,FUNC,IO 
 
         # parameters are defined here for the following (protein) forcefields:
         self.name = 'martini22'
         
         # Charged types:
         self.charges = {"Qd":1, "Qa":-1, "SQd":1, "SQa":-1, "RQd":1, "AQa":-1}                                                           #@#
-                
+        
+        
         #----+---------------------+
         ## A | BACKBONE PARAMETERS |
         #----+---------------------+
@@ -31,7 +31,7 @@ class martini22(Forcefield):
         # bbdef lists the corresponding default backbone beads
         # bbtyp lists the corresponding residue specific backbone beads
         #
-        # bbd   lists the structure specific backbone bond lengths
+        # bbd   lists the structure specific 
         # bbkb  lists the corresponding bond force constants
         #
         # bba   lists the structure specific angles
@@ -51,12 +51,13 @@ class martini22(Forcefield):
         
         ###############################################################################################
         ## BEADS ##                                                                         #                 
-        #                              F     E     H     1     2     3     T     S     C    # secstruc one letter   
-        self.bbdef    =    functions.spl(" N0   Nda    N0    Nd    Na   Nda   Nda    P5    P5")  # Default beads   #@#
+        #                              F     E     H     1     2     3     T     S     C    # SS one letter   
+        self.bbdef    =    FUNC.spl(" N0   Nda    N0    Nd    Na   Nda   Nda    P5    P5")  # Default beads   #@#
         self.bbtyp    = {                                                                   #                 #@#
-                    "ALA": functions.spl(" C5    N0    C5    N0    N0    N0    N0    P4    P4"), # ALA specific    #@#
-                    "PRO": functions.spl(" C5    N0    C5    N0    Na    N0    N0    P4    P4"), # PRO specific    #@#
-                    "HYP": functions.spl(" C5    N0    C5    N0    N0    N0    N0    P4    P4")  # HYP specific    #@#
+                    "ALA": FUNC.spl(" C5    N0    C5    N0    N0    N0    N0    P4    P4"), # ALA specific    #@#
+                    "PRO": FUNC.spl(" C5    N0    C5    N0    Na    N0    N0    P4    P4"), # PRO specific    #@#
+                    "HYP": FUNC.spl(" C5    N0    C5    N0    N0    N0    N0    P4    P4"), # HYP specific    #@#
+                    "GYM": FUNC.spl("Nda   Nda   Nda   Nda   Nda   Nda   Nda   Nda   Nda")  # GYM bead defintions
         }                                                                                   #                 #@#
         ## BONDS ##                                                                         #                 
         self.bbldef   =             (.365, .350, .310, .310, .310, .310, .350, .350, .350)  # BB bond lengths #@#
@@ -108,28 +109,32 @@ class martini22(Forcefield):
         self.sidechains = {
             #RES#   BEADS                   BONDS                                                   ANGLES              DIHEDRALS
             #                               BB-SC          SC-SC                                        BB-SC-SC  SC-SC-SC
-            "TRP": [functions.spl("SC4 SNd SC5 SC5"),[(0.300,5000)]+[(0.270,None) for i in range(5)],        [(210,50),(90,50),(90,50)], [(0,50),(0,200)]],
-            "TYR": [functions.spl("SC4 SC4 SP1"),    [(0.320,5000), (0.270,None), (0.270,None),(0.270,None)],[(150,50),(150,50)],        [(0,50)]],
-            "PHE": [functions.spl("SC5 SC5 SC5"),    [(0.310,7500), (0.270,None), (0.270,None),(0.270,None)],[(150,50),(150,50)],        [(0,50)]],
-            "HIS": [functions.spl("SC4 SP1 SP1"),    [(0.320,7500), (0.270,None), (0.270,None),(0.270,None)],[(150,50),(150,50)],        [(0,50)]],
-            "HIH": [functions.spl("SC4 SP1 SQd"),    [(0.320,7500), (0.270,None), (0.270,None),(0.270,None)],[(150,50),(150,50)],        [(0,50)]],
-            "ARG": [functions.spl("N0 Qd"),          [(0.330,5000), (0.340,5000)],                           [(180,25)]],
-            "LYS": [functions.spl("C3 Qd"),          [(0.330,5000), (0.280,5000)],                           [(180,25)]],
-            "CYS": [functions.spl("C5"),             [(0.310,7500)]],
-            "ASP": [functions.spl("Qa"),             [(0.320,7500)]],
-            "GLU": [functions.spl("Qa"),             [(0.400,5000)]],
-            "ILE": [functions.spl("AC1"),            [(0.310,None)]],
-            "LEU": [functions.spl("AC1"),            [(0.330,7500)]],
-            "MET": [functions.spl("C5"),             [(0.400,2500)]],
-            "ASN": [functions.spl("P5"),             [(0.320,5000)]],
-            "PRO": [functions.spl("C3"),             [(0.300,7500)]],
-            "HYP": [functions.spl("P1"),             [(0.300,7500)]],
-            "GLN": [functions.spl("P4"),             [(0.400,5000)]],
-            "SER": [functions.spl("P1"),             [(0.250,7500)]],
-            "THR": [functions.spl("P1"),             [(0.260,None)]],
-            "VAL": [functions.spl("AC2"),            [(0.265,None)]],
+            "TRP": [FUNC.spl("SC4 SNd SC5 SC5"),[(0.300,5000)]+[(0.270,None) for i in range(5)],        [(210,50),(90,50),(90,50)], [(0,50),(0,200)]],
+            "TYR": [FUNC.spl("SC4 SC4 SP1"),    [(0.320,5000), (0.270,None), (0.270,None),(0.270,None)],[(150,50),(150,50)],        [(0,50)]],
+            "PHE": [FUNC.spl("SC5 SC5 SC5"),    [(0.310,7500), (0.270,None), (0.270,None),(0.270,None)],[(150,50),(150,50)],        [(0,50)]],
+            "HIS": [FUNC.spl("SC4 SP1 SP1"),    [(0.320,7500), (0.270,None), (0.270,None),(0.270,None)],[(150,50),(150,50)],        [(0,50)]],
+            "HIH": [FUNC.spl("SC4 SP1 SQd"),    [(0.320,7500), (0.270,None), (0.270,None),(0.270,None)],[(150,50),(150,50)],        [(0,50)]],
+            "ARG": [FUNC.spl("N0 Qd"),          [(0.330,5000), (0.340,5000)],                           [(180,25)]],
+            "LYS": [FUNC.spl("C3 Qd"),          [(0.330,5000), (0.280,5000)],                           [(180,25)]],
+            "CYS": [FUNC.spl("C5"),             [(0.310,7500)]],
+            "CYP": [FUNC.spl("C5 C1 C1 C1 C1"), [(0.380,8000), (0.39,5000), (0.47,4500), (0.47,4500), (0.41,5500)],[(150,35),(125,25),(180,25),(180,28)]],
+            "CYF": [FUNC.spl("C5 C3 C3 C3 C3"), [(0.390,8000), (0.420,6000), (0.43,5000), (0.31,12000), (0.23,15000)],[(180,65),(125,42),(130,48),(170,50)]],
+            "CYG": [FUNC.spl("C5 C1 C1 C1 C1 C1"), [(0.380, 8500),  (0.420,6000), (0.420,7750), (0.41,7000), (0.40,9000), (0.24,8000)],[(150,50),(125,55),(130,45),(180,38),(180,75)]],              
+            "ASP": [FUNC.spl("Qa"),             [(0.320,7500)]],
+            "GLU": [FUNC.spl("Qa"),             [(0.400,5000)]],
+            "ILE": [FUNC.spl("AC1"),            [(0.310,None)]],
+            "LEU": [FUNC.spl("AC1"),            [(0.330,7500)]],
+            "MET": [FUNC.spl("C5"),             [(0.400,2500)]],
+            "ASN": [FUNC.spl("P5"),             [(0.320,5000)]],
+            "PRO": [FUNC.spl("C3"),             [(0.300,7500)]],
+            "HYP": [FUNC.spl("P1"),             [(0.300,7500)]],
+            "GLN": [FUNC.spl("P4"),             [(0.400,5000)]],
+            "SER": [FUNC.spl("P1"),             [(0.250,7500)]],
+            "THR": [FUNC.spl("P1"),             [(0.260,None)]],
+            "VAL": [FUNC.spl("AC2"),            [(0.265,None)]],
             "ALA": [],
             "GLY": [],
+            "GYM": [FUNC.spl("C1 C1 C1 C1"),    [(0.36,7500),(0.47,3000),(0.47,4000),(0.36,5000)],                  [(140,30),(160,38),(175,45)]],
             }
         
         # Not all (eg Elnedyn) forcefields use backbone-backbone-sidechain angles and BBBB-dihedrals.
@@ -142,7 +147,7 @@ class martini22(Forcefield):
 
         # If masses or charged diverge from standard (45/72 and -/+1) they are defined here.
         self.mass_charge = {
-        #RES   MAsecstruc               CHARGE
+        #RES   MASS               CHARGE
         }
 
         # Defines the connectivity between between beads
@@ -162,6 +167,9 @@ class martini22(Forcefield):
         "ASP":     [[(0,1)]],
         "GLU":     [[(0,1)]],
         "CYS":     [[(0,1)]],
+        "CYP":     [[(0,1),(1,2),(2,3),(3,4),(4,5)], [(0,1,2),(1,2,3),(2,3,4),(3,4,5)]],         
+        "CYF":     [[(0,1),(1,2),(2,3),(3,4),(4,5)], [(0,1,2),(1,2,3),(2,3,4),(3,4,5)]],
+        "CYG":     [[(0,1),(1,2),(2,3),(3,4),(4,5),(5,6)], [(0,1,2),(1,2,3),(2,3,4),(3,4,5),(4,5,6)]],
         "ILE":     [[(0,1)]],
         "LEU":     [[(0,1)]],
         "MET":     [[(0,1)]],
@@ -170,6 +178,7 @@ class martini22(Forcefield):
         "VAL":     [[(0,1)]],
         "ALA":     [],
         "GLY":     [],
+        "GYM":     [[(0,1),(1,2),(2,3),(3,4)], [(0,1,2),(1,2,3),(2,3,4)]],
         }
         
         #----+----------------+
@@ -189,7 +198,67 @@ class martini22(Forcefield):
         # But Elnedyn has been parametrized with type 1.
         self.EBondType = 6
         
-        self.finish()
+        #----+----------------+
+        ## D | INTERNAL STUFF |
+        #----+----------------+
+        
+        
+        ## BACKBONE BEAD TYPE ##                                                                    
+        # Dictionary of default bead types (*D)                                                     
+        self.bbBeadDictD  = FUNC.hash(SS.bbss,self.bbdef)                                                             
+        # Dictionary of dictionaries of types for specific residues (*S)                            
+        self.bbBeadDictS  = dict([(i,FUNC.hash(SS.bbss,self.bbtyp[i])) for i in self.bbtyp.keys()])                        
+        
+        ## BB BOND TYPE ##                                                                          
+        # Dictionary of default abond types (*D)                                                    
+        self.bbBondDictD = FUNC.hash(SS.bbss,zip(self.bbldef,self.bbkb))                                                   
+        # Dictionary of dictionaries for specific types (*S)                                        
+        self.bbBondDictS = dict([(i,FUNC.hash(SS.bbss,zip(self.bbltyp[i],self.bbkbtyp[i]))) for i in self.bbltyp.keys()])       
+        # This is tricky to read, but it gives the right bondlength/force constant
+        
+        ## BBB ANGLE TYPE ##                                                                        
+        # Dictionary of default angle types (*D)                                                    
+        self.bbAngleDictD = FUNC.hash(SS.bbss,zip(self.bbadef,self.bbka))                                                  
+        # Dictionary of dictionaries for specific types (*S)                                        
+        self.bbAngleDictS = dict([(i,FUNC.hash(SS.bbss,zip(self.bbatyp[i],self.bbkatyp[i]))) for i in self.bbatyp.keys()])      
+                    
+        ## BBBB DIHEDRAL TYPE ##                                                                    
+        # Dictionary of default dihedral types (*D)                                                 
+        self.bbDihedDictD = FUNC.hash(SS.bbss,zip(self.bbddef,self.bbkd,self.bbdmul))                                           
+        # Dictionary of dictionaries for specific types (*S)                                        
+        self.bbDihedDictS = dict([(i,FUNC.hash(SS.bbss,zip(self.bbdtyp[i],self.bbkdtyp[i]))) for i in self.bbdtyp.keys()])      
+        
+    # The following function returns the backbone bead for a given residue and                   
+    # secondary structure type.                                                                 
+    # 1. Look up the proper dictionary for the residue                                          
+    # 2. Get the proper type from it for the secondary structure                                
+    # If the residue is not in the dictionary of specials, use the default                      
+    # If the secondary structure is not listed (in the residue specific                         
+    # dictionary) revert to the default.                                                        
+    def bbGetBead(self,r1,ss="C"):                                                                   
+        return self.bbBeadDictS.get(r1,self.bbBeadDictD).get(ss,self.bbBeadDictD.get(ss))                      
+    
+    
+    def bbGetBond(self,r,a,ss):
+        # Retrieve parameters for each residue from table defined above
+        b1 = self.bbBondDictS.get(r[0],self.bbBondDictD).get(ss[0],self.bbBondDictD.get(ss[0]))
+        b2 = self.bbBondDictS.get(r[1],self.bbBondDictD).get(ss[1],self.bbBondDictD.get(ss[1]))
+        # Determine which parameters to use for the bond
+        return ( (b1[0]+b2[0])/2, min(b1[1],b2[1]) )
+    
+    def bbGetAngle(self,r,ca,ss):
+        # PRO in helices is dominant
+        if r[1] == "PRO" and ss[1] in "H123":
+            return self.bbAngleDictS["PRO"].get(ss[1])
+        else:
+            # Retrieve parameters for each residue from table defined above
+            a = [ self.bbAngleDictS.get(r[0],self.bbAngleDictD).get(ss[0],self.bbAngleDictD.get(ss[0])),
+                  self.bbAngleDictS.get(r[1],self.bbAngleDictD).get(ss[1],self.bbAngleDictD.get(ss[1])),
+                  self.bbAngleDictS.get(r[2],self.bbAngleDictD).get(ss[2],self.bbAngleDictD.get(ss[2])) ]
+            # Sort according to force constant
+            a.sort(key=lambda i: (i[1],i[0]))
+            # This selects the set with the smallest force constant and the smallest angle
+            return a[0]
         
     def messages(self):
         '''Prints any force-field specific logging messages.'''
